@@ -43,24 +43,24 @@ function _initializerWarningHelper(descriptor, context) {
   throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
 }
 
-import { inject, bindable, bindingMode, BindingEngine } from 'aurelia-framework';
+import { inject, bindable, bindingMode, BindingEngine } from "aurelia-framework";
 
 export let AureliaTableCustomAttribute = (_dec = inject(BindingEngine), _dec2 = bindable({ defaultBindingMode: bindingMode.twoWay }), _dec3 = bindable({ defaultBindingMode: bindingMode.twoWay }), _dec4 = bindable({ defaultBindingMode: bindingMode.twoWay }), _dec5 = bindable({ defaultBindingMode: bindingMode.twoWay }), _dec(_class = (_class2 = class AureliaTableCustomAttribute {
 
   constructor(bindingEngine) {
-    _initDefineProp(this, 'data', _descriptor, this);
+    _initDefineProp(this, "data", _descriptor, this);
 
-    _initDefineProp(this, 'displayData', _descriptor2, this);
+    _initDefineProp(this, "displayData", _descriptor2, this);
 
-    _initDefineProp(this, 'filters', _descriptor3, this);
+    _initDefineProp(this, "filters", _descriptor3, this);
 
-    _initDefineProp(this, 'currentPage', _descriptor4, this);
+    _initDefineProp(this, "currentPage", _descriptor4, this);
 
-    _initDefineProp(this, 'pageSize', _descriptor5, this);
+    _initDefineProp(this, "pageSize", _descriptor5, this);
 
-    _initDefineProp(this, 'totalItems', _descriptor6, this);
+    _initDefineProp(this, "totalItems", _descriptor6, this);
 
-    _initDefineProp(this, 'api', _descriptor7, this);
+    _initDefineProp(this, "api", _descriptor7, this);
 
     this.isAttached = false;
     this.sortChangedListeners = [];
@@ -77,13 +77,15 @@ export let AureliaTableCustomAttribute = (_dec = inject(BindingEngine), _dec2 = 
 
     if (Array.isArray(this.filters)) {
       for (let filter of this.filters) {
-        let observer = this.bindingEngine.propertyObserver(filter, 'value').subscribe(() => this.filterChanged());
+        let observer = this.bindingEngine.propertyObserver(filter, "value").subscribe(() => this.filterChanged());
         this.filterObservers.push(observer);
       }
     }
 
     this.api = {
-      revealItem: item => this.revealItem(item)
+      revealItem: item => this.revealItem(item),
+      selectAll: (includeFilters, includePagination) => this.selectAll(includeFilters, includePagination),
+      deselectAll: () => this.deselectAll()
     };
   }
 
@@ -107,6 +109,7 @@ export let AureliaTableCustomAttribute = (_dec = inject(BindingEngine), _dec2 = 
       this.currentPage = 1;
     }
     this.applyPlugins();
+    this.deselectAll();
   }
 
   currentPageChanged() {
@@ -130,10 +133,6 @@ export let AureliaTableCustomAttribute = (_dec = inject(BindingEngine), _dec2 = 
 
     if (this.hasFilter()) {
       localData = this.doFilter(localData);
-    }
-
-    if ((this.sortKey || this.customSort) && this.sortOrder !== 0) {
-      this.doSort(localData);
     }
 
     this.totalItems = localData.length;
@@ -168,7 +167,7 @@ export let AureliaTableCustomAttribute = (_dec = inject(BindingEngine), _dec2 = 
   }
 
   passFilter(item, filter) {
-    if (typeof filter.custom === 'function' && !filter.custom(filter.value, item)) {
+    if (typeof filter.custom === "function" && !filter.custom(filter.value, item)) {
       return false;
     }
 
@@ -192,14 +191,14 @@ export let AureliaTableCustomAttribute = (_dec = inject(BindingEngine), _dec2 = 
 
   doSort(toSort) {
     toSort.sort((a, b) => {
-      if (typeof this.customSort === 'function') {
+      if (typeof this.customSort === "function") {
         return this.customSort(a, b, this.sortOrder);
       }
 
       let val1;
       let val2;
 
-      if (typeof this.sortKey === 'function') {
+      if (typeof this.sortKey === "function") {
         val1 = this.sortKey(a, this.sortOrder);
         val2 = this.sortKey(b, this.sortOrder);
       } else {
@@ -207,8 +206,8 @@ export let AureliaTableCustomAttribute = (_dec = inject(BindingEngine), _dec2 = 
         val2 = this.getPropertyValue(b, this.sortKey);
       }
 
-      if (val1 === null || val1 === undefined) val1 = '';
-      if (val2 === null || val2 === undefined) val2 = '';
+      if (val1 === null || val1 === undefined) val1 = "";
+      if (val2 === null || val2 === undefined) val2 = "";
 
       if (this.isNumeric(val1) && this.isNumeric(val2)) {
         return (val1 - val2) * this.sortOrder;
@@ -222,9 +221,9 @@ export let AureliaTableCustomAttribute = (_dec = inject(BindingEngine), _dec2 = 
   }
 
   getPropertyValue(object, keyPath) {
-    keyPath = keyPath.replace(/\[(\w+)\]/g, '.$1');
-    keyPath = keyPath.replace(/^\./, '');
-    let a = keyPath.split('.');
+    keyPath = keyPath.replace(/\[(\w+)\]/g, ".$1");
+    keyPath = keyPath.replace(/^\./, "");
+    let a = keyPath.split(".");
     for (let i = 0, n = a.length; i < n; ++i) {
       let k = a[i];
       if (k in object) {
@@ -316,25 +315,61 @@ export let AureliaTableCustomAttribute = (_dec = inject(BindingEngine), _dec2 = 
     return true;
   }
 
-}, (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'data', [bindable], {
+  selectAll(includeFilters, includePagination) {
+    if (!includeFilters && !includePagination) {
+      this.data.forEach(item => {
+        item.$isSelected = true;
+      });
+
+      return;
+    }
+
+    let localData;
+
+    if (includeFilters) {
+      if (this.hasFilter()) {
+        localData = this.doFilter(this.data);
+      }
+    } else {
+      localData = this.data;
+    }
+
+    if (includePagination) {
+      if (this.hasPagination()) {
+        this.beforePagination = [].concat(localData);
+        localData = this.doPaginate(localData);
+      }
+    }
+
+    localData.forEach(item => {
+      item.$isSelected = true;
+    });
+  }
+
+  deselectAll() {
+    this.data.forEach(item => {
+      item.$isSelected = false;
+    });
+  }
+}, (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "data", [bindable], {
   enumerable: true,
   initializer: null
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'displayData', [_dec2], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "displayData", [_dec2], {
   enumerable: true,
   initializer: null
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'filters', [bindable], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "filters", [bindable], {
   enumerable: true,
   initializer: null
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'currentPage', [_dec3], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "currentPage", [_dec3], {
   enumerable: true,
   initializer: null
-}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, 'pageSize', [bindable], {
+}), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "pageSize", [bindable], {
   enumerable: true,
   initializer: null
-}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, 'totalItems', [_dec4], {
+}), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "totalItems", [_dec4], {
   enumerable: true,
   initializer: null
-}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, 'api', [_dec5], {
+}), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "api", [_dec5], {
   enumerable: true,
   initializer: null
 })), _class2)) || _class);

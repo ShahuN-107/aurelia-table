@@ -66,13 +66,13 @@ export class AutSelectCustomAttribute {
     let selectedEvent;
     if (window.CustomEvent) {
       selectedEvent = new CustomEvent("select", {
-        detail: { row: this.row, isSelected: this.row.$isSelected },
+        detail: { row: this.row },
         bubbles: true,
       });
     } else {
       selectedEvent = document.createEvent("CustomEvent");
       selectedEvent.initCustomEvent("select", true, true, {
-        detail: { row: this.row, isSelected: this.row.$isSelected },
+        detail: { row: this.row },
       });
     }
     this.element.dispatchEvent(selectedEvent);
@@ -83,14 +83,14 @@ export class AutSelectCustomAttribute {
 
     if (this.row.$isSelected) {
       if (this.mode === "single") {
-        this.deselectAll();
+        this.deselectAllButThis();
       }
     }
 
     this.dispatchSelectedEvent();
   }
 
-  deselectAll() {
+  deselectAllButThis() {
     this.auTable.data.forEach((item) => {
       if (item !== this.row) {
         item.$isSelected = false;

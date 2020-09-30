@@ -122,13 +122,13 @@ var AutSelectCustomAttribute = exports.AutSelectCustomAttribute = (_dec = (0, _a
     var selectedEvent = void 0;
     if (window.CustomEvent) {
       selectedEvent = new CustomEvent("select", {
-        detail: { row: this.row, isSelected: this.row.$isSelected },
+        detail: { row: this.row },
         bubbles: true
       });
     } else {
       selectedEvent = document.createEvent("CustomEvent");
       selectedEvent.initCustomEvent("select", true, true, {
-        detail: { row: this.row, isSelected: this.row.$isSelected }
+        detail: { row: this.row }
       });
     }
     this.element.dispatchEvent(selectedEvent);
@@ -139,14 +139,14 @@ var AutSelectCustomAttribute = exports.AutSelectCustomAttribute = (_dec = (0, _a
 
     if (this.row.$isSelected) {
       if (this.mode === "single") {
-        this.deselectAll();
+        this.deselectAllButThis();
       }
     }
 
     this.dispatchSelectedEvent();
   };
 
-  AutSelectCustomAttribute.prototype.deselectAll = function deselectAll() {
+  AutSelectCustomAttribute.prototype.deselectAllButThis = function deselectAllButThis() {
     var _this3 = this;
 
     this.auTable.data.forEach(function (item) {

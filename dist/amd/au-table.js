@@ -1,5 +1,5 @@
-define(['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
-  'use strict';
+define(["exports", "aurelia-framework"], function (exports, _aureliaFramework) {
+  "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
@@ -61,19 +61,19 @@ define(['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
     function AureliaTableCustomAttribute(bindingEngine) {
       _classCallCheck(this, AureliaTableCustomAttribute);
 
-      _initDefineProp(this, 'data', _descriptor, this);
+      _initDefineProp(this, "data", _descriptor, this);
 
-      _initDefineProp(this, 'displayData', _descriptor2, this);
+      _initDefineProp(this, "displayData", _descriptor2, this);
 
-      _initDefineProp(this, 'filters', _descriptor3, this);
+      _initDefineProp(this, "filters", _descriptor3, this);
 
-      _initDefineProp(this, 'currentPage', _descriptor4, this);
+      _initDefineProp(this, "currentPage", _descriptor4, this);
 
-      _initDefineProp(this, 'pageSize', _descriptor5, this);
+      _initDefineProp(this, "pageSize", _descriptor5, this);
 
-      _initDefineProp(this, 'totalItems', _descriptor6, this);
+      _initDefineProp(this, "totalItems", _descriptor6, this);
 
-      _initDefineProp(this, 'api', _descriptor7, this);
+      _initDefineProp(this, "api", _descriptor7, this);
 
       this.isAttached = false;
       this.sortChangedListeners = [];
@@ -107,7 +107,7 @@ define(['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
 
           var filter = _ref;
 
-          var observer = this.bindingEngine.propertyObserver(filter, 'value').subscribe(function () {
+          var observer = this.bindingEngine.propertyObserver(filter, "value").subscribe(function () {
             return _this.filterChanged();
           });
           this.filterObservers.push(observer);
@@ -117,6 +117,12 @@ define(['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
       this.api = {
         revealItem: function revealItem(item) {
           return _this.revealItem(item);
+        },
+        selectAll: function selectAll(includeFilters, includePagination) {
+          return _this.selectAll(includeFilters, includePagination);
+        },
+        deselectAll: function deselectAll() {
+          return _this.deselectAll();
         }
       };
     };
@@ -154,6 +160,7 @@ define(['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
         this.currentPage = 1;
       }
       this.applyPlugins();
+      this.deselectAll();
     };
 
     AureliaTableCustomAttribute.prototype.currentPageChanged = function currentPageChanged() {
@@ -177,10 +184,6 @@ define(['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
 
       if (this.hasFilter()) {
         localData = this.doFilter(localData);
-      }
-
-      if ((this.sortKey || this.customSort) && this.sortOrder !== 0) {
-        this.doSort(localData);
       }
 
       this.totalItems = localData.length;
@@ -241,7 +244,7 @@ define(['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
     };
 
     AureliaTableCustomAttribute.prototype.passFilter = function passFilter(item, filter) {
-      if (typeof filter.custom === 'function' && !filter.custom(filter.value, item)) {
+      if (typeof filter.custom === "function" && !filter.custom(filter.value, item)) {
         return false;
       }
 
@@ -280,14 +283,14 @@ define(['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
       var _this2 = this;
 
       toSort.sort(function (a, b) {
-        if (typeof _this2.customSort === 'function') {
+        if (typeof _this2.customSort === "function") {
           return _this2.customSort(a, b, _this2.sortOrder);
         }
 
         var val1 = void 0;
         var val2 = void 0;
 
-        if (typeof _this2.sortKey === 'function') {
+        if (typeof _this2.sortKey === "function") {
           val1 = _this2.sortKey(a, _this2.sortOrder);
           val2 = _this2.sortKey(b, _this2.sortOrder);
         } else {
@@ -295,8 +298,8 @@ define(['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
           val2 = _this2.getPropertyValue(b, _this2.sortKey);
         }
 
-        if (val1 === null || val1 === undefined) val1 = '';
-        if (val2 === null || val2 === undefined) val2 = '';
+        if (val1 === null || val1 === undefined) val1 = "";
+        if (val2 === null || val2 === undefined) val2 = "";
 
         if (_this2.isNumeric(val1) && _this2.isNumeric(val2)) {
           return (val1 - val2) * _this2.sortOrder;
@@ -310,9 +313,9 @@ define(['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
     };
 
     AureliaTableCustomAttribute.prototype.getPropertyValue = function getPropertyValue(object, keyPath) {
-      keyPath = keyPath.replace(/\[(\w+)\]/g, '.$1');
-      keyPath = keyPath.replace(/^\./, '');
-      var a = keyPath.split('.');
+      keyPath = keyPath.replace(/\[(\w+)\]/g, ".$1");
+      keyPath = keyPath.replace(/^\./, "");
+      var a = keyPath.split(".");
       for (var i = 0, n = a.length; i < n; ++i) {
         var k = a[i];
         if (k in object) {
@@ -421,26 +424,63 @@ define(['exports', 'aurelia-framework'], function (exports, _aureliaFramework) {
       return true;
     };
 
+    AureliaTableCustomAttribute.prototype.selectAll = function selectAll(includeFilters, includePagination) {
+      if (!includeFilters && !includePagination) {
+        this.data.forEach(function (item) {
+          item.$isSelected = true;
+        });
+
+        return;
+      }
+
+      var localData = void 0;
+
+      if (includeFilters) {
+        if (this.hasFilter()) {
+          localData = this.doFilter(this.data);
+        }
+      } else {
+        localData = this.data;
+      }
+
+      if (includePagination) {
+        if (this.hasPagination()) {
+          this.beforePagination = [].concat(localData);
+          localData = this.doPaginate(localData);
+        }
+      }
+
+      localData.forEach(function (item) {
+        item.$isSelected = true;
+      });
+    };
+
+    AureliaTableCustomAttribute.prototype.deselectAll = function deselectAll() {
+      this.data.forEach(function (item) {
+        item.$isSelected = false;
+      });
+    };
+
     return AureliaTableCustomAttribute;
-  }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'data', [_aureliaFramework.bindable], {
+  }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "data", [_aureliaFramework.bindable], {
     enumerable: true,
     initializer: null
-  }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'displayData', [_dec2], {
+  }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "displayData", [_dec2], {
     enumerable: true,
     initializer: null
-  }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'filters', [_aureliaFramework.bindable], {
+  }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "filters", [_aureliaFramework.bindable], {
     enumerable: true,
     initializer: null
-  }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'currentPage', [_dec3], {
+  }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "currentPage", [_dec3], {
     enumerable: true,
     initializer: null
-  }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, 'pageSize', [_aureliaFramework.bindable], {
+  }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "pageSize", [_aureliaFramework.bindable], {
     enumerable: true,
     initializer: null
-  }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, 'totalItems', [_dec4], {
+  }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "totalItems", [_dec4], {
     enumerable: true,
     initializer: null
-  }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, 'api', [_dec5], {
+  }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "api", [_dec5], {
     enumerable: true,
     initializer: null
   })), _class2)) || _class);
