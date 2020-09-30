@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -7,9 +7,9 @@ exports.AutSelectCustomAttribute = undefined;
 
 var _dec, _dec2, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4;
 
-var _aureliaFramework = require('aurelia-framework');
+var _aureliaFramework = require("aurelia-framework");
 
-var _auTable = require('./au-table');
+var _auTable = require("./au-table");
 
 function _initDefineProp(target, property, descriptor, context) {
   if (!descriptor) return;
@@ -62,13 +62,13 @@ var AutSelectCustomAttribute = exports.AutSelectCustomAttribute = (_dec = (0, _a
 
     _classCallCheck(this, AutSelectCustomAttribute);
 
-    _initDefineProp(this, 'row', _descriptor, this);
+    _initDefineProp(this, "row", _descriptor, this);
 
-    _initDefineProp(this, 'mode', _descriptor2, this);
+    _initDefineProp(this, "mode", _descriptor2, this);
 
-    _initDefineProp(this, 'selectedClass', _descriptor3, this);
+    _initDefineProp(this, "selectedClass", _descriptor3, this);
 
-    _initDefineProp(this, 'custom', _descriptor4, this);
+    _initDefineProp(this, "custom", _descriptor4, this);
 
     this.auTable = auTable;
     this.element = element;
@@ -83,11 +83,11 @@ var AutSelectCustomAttribute = exports.AutSelectCustomAttribute = (_dec = (0, _a
     var _this2 = this;
 
     if (!this.custom) {
-      this.element.style.cursor = 'pointer';
-      this.element.addEventListener('click', this.rowSelectedListener);
+      this.element.style.cursor = "pointer";
+      this.element.addEventListener("click", this.rowSelectedListener);
     }
 
-    this.selectedSubscription = this.bindingEngine.propertyObserver(this.row, '$isSelected').subscribe(function () {
+    this.selectedSubscription = this.bindingEngine.propertyObserver(this.row, "$isSelected").subscribe(function () {
       return _this2.isSelectedChanged();
     });
 
@@ -96,7 +96,7 @@ var AutSelectCustomAttribute = exports.AutSelectCustomAttribute = (_dec = (0, _a
 
   AutSelectCustomAttribute.prototype.detached = function detached() {
     if (!this.custom) {
-      this.element.removeEventListener('click', this.rowSelectedListener);
+      this.element.removeEventListener("click", this.rowSelectedListener);
     }
 
     this.selectedSubscription.dispose();
@@ -112,7 +112,7 @@ var AutSelectCustomAttribute = exports.AutSelectCustomAttribute = (_dec = (0, _a
 
   AutSelectCustomAttribute.prototype.handleRowSelected = function handleRowSelected(event) {
     var source = event.target || event.srcElement;
-    if (source.tagName.toLowerCase() !== 'td') {
+    if (source.tagName.toLowerCase() !== "td") {
       return;
     }
     this.row.$isSelected = this.row.$isSelected ? false : true;
@@ -121,14 +121,14 @@ var AutSelectCustomAttribute = exports.AutSelectCustomAttribute = (_dec = (0, _a
   AutSelectCustomAttribute.prototype.dispatchSelectedEvent = function dispatchSelectedEvent() {
     var selectedEvent = void 0;
     if (window.CustomEvent) {
-      selectedEvent = new CustomEvent('select', {
-        detail: { row: this.row },
+      selectedEvent = new CustomEvent("select", {
+        detail: { row: this.row, isSelected: this.row.$isSelected },
         bubbles: true
       });
     } else {
-      selectedEvent = document.createEvent('CustomEvent');
-      selectedEvent.initCustomEvent('select', true, true, {
-        detail: { row: this.row }
+      selectedEvent = document.createEvent("CustomEvent");
+      selectedEvent.initCustomEvent("select", true, true, {
+        detail: { row: this.row, isSelected: this.row.$isSelected }
       });
     }
     this.element.dispatchEvent(selectedEvent);
@@ -138,12 +138,12 @@ var AutSelectCustomAttribute = exports.AutSelectCustomAttribute = (_dec = (0, _a
     this.setClass();
 
     if (this.row.$isSelected) {
-      if (this.mode === 'single') {
+      if (this.mode === "single") {
         this.deselectAll();
       }
-
-      this.dispatchSelectedEvent();
     }
+
+    this.dispatchSelectedEvent();
   };
 
   AutSelectCustomAttribute.prototype.deselectAll = function deselectAll() {
@@ -157,20 +157,20 @@ var AutSelectCustomAttribute = exports.AutSelectCustomAttribute = (_dec = (0, _a
   };
 
   return AutSelectCustomAttribute;
-}(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'row', [_dec2], {
+}(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "row", [_dec2], {
   enumerable: true,
   initializer: null
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'mode', [_aureliaFramework.bindable], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "mode", [_aureliaFramework.bindable], {
   enumerable: true,
   initializer: function initializer() {
-    return 'single';
+    return "single";
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'selectedClass', [_aureliaFramework.bindable], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "selectedClass", [_aureliaFramework.bindable], {
   enumerable: true,
   initializer: function initializer() {
-    return 'aut-row-selected';
+    return "aut-row-selected";
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'custom', [_aureliaFramework.bindable], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "custom", [_aureliaFramework.bindable], {
   enumerable: true,
   initializer: function initializer() {
     return false;

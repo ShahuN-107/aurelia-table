@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-System.register(['aurelia-framework', './au-table'], function (_export, _context) {
+System.register(["aurelia-framework", "./au-table"], function (_export, _context) {
   "use strict";
 
   var inject, bindable, bindingMode, BindingEngine, AureliaTableCustomAttribute, _dec, _dec2, _class, _desc, _value, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, AutSelectCustomAttribute;
@@ -64,19 +64,19 @@ System.register(['aurelia-framework', './au-table'], function (_export, _context
       AureliaTableCustomAttribute = _auTable.AureliaTableCustomAttribute;
     }],
     execute: function () {
-      _export('AutSelectCustomAttribute', AutSelectCustomAttribute = (_dec = inject(AureliaTableCustomAttribute, Element, BindingEngine), _dec2 = bindable({ defaultBindingMode: bindingMode.twoWay }), _dec(_class = (_class2 = function () {
+      _export("AutSelectCustomAttribute", AutSelectCustomAttribute = (_dec = inject(AureliaTableCustomAttribute, Element, BindingEngine), _dec2 = bindable({ defaultBindingMode: bindingMode.twoWay }), _dec(_class = (_class2 = function () {
         function AutSelectCustomAttribute(auTable, element, bindingEngine) {
           var _this = this;
 
           _classCallCheck(this, AutSelectCustomAttribute);
 
-          _initDefineProp(this, 'row', _descriptor, this);
+          _initDefineProp(this, "row", _descriptor, this);
 
-          _initDefineProp(this, 'mode', _descriptor2, this);
+          _initDefineProp(this, "mode", _descriptor2, this);
 
-          _initDefineProp(this, 'selectedClass', _descriptor3, this);
+          _initDefineProp(this, "selectedClass", _descriptor3, this);
 
-          _initDefineProp(this, 'custom', _descriptor4, this);
+          _initDefineProp(this, "custom", _descriptor4, this);
 
           this.auTable = auTable;
           this.element = element;
@@ -91,11 +91,11 @@ System.register(['aurelia-framework', './au-table'], function (_export, _context
           var _this2 = this;
 
           if (!this.custom) {
-            this.element.style.cursor = 'pointer';
-            this.element.addEventListener('click', this.rowSelectedListener);
+            this.element.style.cursor = "pointer";
+            this.element.addEventListener("click", this.rowSelectedListener);
           }
 
-          this.selectedSubscription = this.bindingEngine.propertyObserver(this.row, '$isSelected').subscribe(function () {
+          this.selectedSubscription = this.bindingEngine.propertyObserver(this.row, "$isSelected").subscribe(function () {
             return _this2.isSelectedChanged();
           });
 
@@ -104,7 +104,7 @@ System.register(['aurelia-framework', './au-table'], function (_export, _context
 
         AutSelectCustomAttribute.prototype.detached = function detached() {
           if (!this.custom) {
-            this.element.removeEventListener('click', this.rowSelectedListener);
+            this.element.removeEventListener("click", this.rowSelectedListener);
           }
 
           this.selectedSubscription.dispose();
@@ -120,7 +120,7 @@ System.register(['aurelia-framework', './au-table'], function (_export, _context
 
         AutSelectCustomAttribute.prototype.handleRowSelected = function handleRowSelected(event) {
           var source = event.target || event.srcElement;
-          if (source.tagName.toLowerCase() !== 'td') {
+          if (source.tagName.toLowerCase() !== "td") {
             return;
           }
           this.row.$isSelected = this.row.$isSelected ? false : true;
@@ -129,14 +129,14 @@ System.register(['aurelia-framework', './au-table'], function (_export, _context
         AutSelectCustomAttribute.prototype.dispatchSelectedEvent = function dispatchSelectedEvent() {
           var selectedEvent = void 0;
           if (window.CustomEvent) {
-            selectedEvent = new CustomEvent('select', {
-              detail: { row: this.row },
+            selectedEvent = new CustomEvent("select", {
+              detail: { row: this.row, isSelected: this.row.$isSelected },
               bubbles: true
             });
           } else {
-            selectedEvent = document.createEvent('CustomEvent');
-            selectedEvent.initCustomEvent('select', true, true, {
-              detail: { row: this.row }
+            selectedEvent = document.createEvent("CustomEvent");
+            selectedEvent.initCustomEvent("select", true, true, {
+              detail: { row: this.row, isSelected: this.row.$isSelected }
             });
           }
           this.element.dispatchEvent(selectedEvent);
@@ -146,12 +146,12 @@ System.register(['aurelia-framework', './au-table'], function (_export, _context
           this.setClass();
 
           if (this.row.$isSelected) {
-            if (this.mode === 'single') {
+            if (this.mode === "single") {
               this.deselectAll();
             }
-
-            this.dispatchSelectedEvent();
           }
+
+          this.dispatchSelectedEvent();
         };
 
         AutSelectCustomAttribute.prototype.deselectAll = function deselectAll() {
@@ -165,27 +165,27 @@ System.register(['aurelia-framework', './au-table'], function (_export, _context
         };
 
         return AutSelectCustomAttribute;
-      }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'row', [_dec2], {
+      }(), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "row", [_dec2], {
         enumerable: true,
         initializer: null
-      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'mode', [bindable], {
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "mode", [bindable], {
         enumerable: true,
         initializer: function initializer() {
-          return 'single';
+          return "single";
         }
-      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'selectedClass', [bindable], {
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "selectedClass", [bindable], {
         enumerable: true,
         initializer: function initializer() {
-          return 'aut-row-selected';
+          return "aut-row-selected";
         }
-      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'custom', [bindable], {
+      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "custom", [bindable], {
         enumerable: true,
         initializer: function initializer() {
           return false;
         }
       })), _class2)) || _class));
 
-      _export('AutSelectCustomAttribute', AutSelectCustomAttribute);
+      _export("AutSelectCustomAttribute", AutSelectCustomAttribute);
     }
   };
 });

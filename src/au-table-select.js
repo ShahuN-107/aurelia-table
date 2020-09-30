@@ -1,12 +1,16 @@
-import {inject, bindable, bindingMode, BindingEngine} from 'aurelia-framework';
-import {AureliaTableCustomAttribute} from './au-table';
+import {
+  inject,
+  bindable,
+  bindingMode,
+  BindingEngine,
+} from "aurelia-framework";
+import { AureliaTableCustomAttribute } from "./au-table";
 
 @inject(AureliaTableCustomAttribute, Element, BindingEngine)
 export class AutSelectCustomAttribute {
-
-  @bindable({defaultBindingMode: bindingMode.twoWay}) row;
-  @bindable mode = 'single';
-  @bindable selectedClass = 'aut-row-selected';
+  @bindable({ defaultBindingMode: bindingMode.twoWay }) row;
+  @bindable mode = "single";
+  @bindable selectedClass = "aut-row-selected";
   @bindable custom = false;
 
   selectedSubscription;
@@ -16,25 +20,27 @@ export class AutSelectCustomAttribute {
     this.element = element;
     this.bindingEngine = bindingEngine;
 
-    this.rowSelectedListener = event => {
+    this.rowSelectedListener = (event) => {
       this.handleRowSelected(event);
     };
   }
 
   attached() {
     if (!this.custom) {
-      this.element.style.cursor = 'pointer';
-      this.element.addEventListener('click', this.rowSelectedListener);
+      this.element.style.cursor = "pointer";
+      this.element.addEventListener("click", this.rowSelectedListener);
     }
 
-    this.selectedSubscription = this.bindingEngine.propertyObserver(this.row, '$isSelected').subscribe(() => this.isSelectedChanged());
+    this.selectedSubscription = this.bindingEngine
+      .propertyObserver(this.row, "$isSelected")
+      .subscribe(() => this.isSelectedChanged());
 
     this.setClass();
   }
 
   detached() {
     if (!this.custom) {
-      this.element.removeEventListener('click', this.rowSelectedListener);
+      this.element.removeEventListener("click", this.rowSelectedListener);
     }
 
     this.selectedSubscription.dispose();
@@ -50,7 +56,7 @@ export class AutSelectCustomAttribute {
 
   handleRowSelected(event) {
     let source = event.target || event.srcElement;
-    if (source.tagName.toLowerCase() !== 'td') {
+    if (source.tagName.toLowerCase() !== "td") {
       return;
     }
     this.row.$isSelected = this.row.$isSelected ? false : true;
@@ -59,14 +65,14 @@ export class AutSelectCustomAttribute {
   dispatchSelectedEvent() {
     let selectedEvent;
     if (window.CustomEvent) {
-      selectedEvent = new CustomEvent('select', {
-        detail: {row: this.row},
-        bubbles: true
+      selectedEvent = new CustomEvent("select", {
+        detail: { row: this.row, isSelected: this.row.$isSelected },
+        bubbles: true,
       });
     } else {
-      selectedEvent = document.createEvent('CustomEvent');
-      selectedEvent.initCustomEvent('select', true, true, {
-        detail: {row: this.row}
+      selectedEvent = document.createEvent("CustomEvent");
+      selectedEvent.initCustomEvent("select", true, true, {
+        detail: { row: this.row, isSelected: this.row.$isSelected },
       });
     }
     this.element.dispatchEvent(selectedEvent);
@@ -76,16 +82,16 @@ export class AutSelectCustomAttribute {
     this.setClass();
 
     if (this.row.$isSelected) {
-      if (this.mode === 'single') {
+      if (this.mode === "single") {
         this.deselectAll();
       }
-
-      this.dispatchSelectedEvent();
     }
+
+    this.dispatchSelectedEvent();
   }
 
   deselectAll() {
-    this.auTable.data.forEach(item => {
+    this.auTable.data.forEach((item) => {
       if (item !== this.row) {
         item.$isSelected = false;
       }

@@ -43,19 +43,19 @@ function _initializerWarningHelper(descriptor, context) {
   throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
 }
 
-import { inject, bindable, bindingMode, BindingEngine } from 'aurelia-framework';
-import { AureliaTableCustomAttribute } from './au-table';
+import { inject, bindable, bindingMode, BindingEngine } from "aurelia-framework";
+import { AureliaTableCustomAttribute } from "./au-table";
 
 export let AutSelectCustomAttribute = (_dec = inject(AureliaTableCustomAttribute, Element, BindingEngine), _dec2 = bindable({ defaultBindingMode: bindingMode.twoWay }), _dec(_class = (_class2 = class AutSelectCustomAttribute {
 
   constructor(auTable, element, bindingEngine) {
-    _initDefineProp(this, 'row', _descriptor, this);
+    _initDefineProp(this, "row", _descriptor, this);
 
-    _initDefineProp(this, 'mode', _descriptor2, this);
+    _initDefineProp(this, "mode", _descriptor2, this);
 
-    _initDefineProp(this, 'selectedClass', _descriptor3, this);
+    _initDefineProp(this, "selectedClass", _descriptor3, this);
 
-    _initDefineProp(this, 'custom', _descriptor4, this);
+    _initDefineProp(this, "custom", _descriptor4, this);
 
     this.auTable = auTable;
     this.element = element;
@@ -68,18 +68,18 @@ export let AutSelectCustomAttribute = (_dec = inject(AureliaTableCustomAttribute
 
   attached() {
     if (!this.custom) {
-      this.element.style.cursor = 'pointer';
-      this.element.addEventListener('click', this.rowSelectedListener);
+      this.element.style.cursor = "pointer";
+      this.element.addEventListener("click", this.rowSelectedListener);
     }
 
-    this.selectedSubscription = this.bindingEngine.propertyObserver(this.row, '$isSelected').subscribe(() => this.isSelectedChanged());
+    this.selectedSubscription = this.bindingEngine.propertyObserver(this.row, "$isSelected").subscribe(() => this.isSelectedChanged());
 
     this.setClass();
   }
 
   detached() {
     if (!this.custom) {
-      this.element.removeEventListener('click', this.rowSelectedListener);
+      this.element.removeEventListener("click", this.rowSelectedListener);
     }
 
     this.selectedSubscription.dispose();
@@ -95,7 +95,7 @@ export let AutSelectCustomAttribute = (_dec = inject(AureliaTableCustomAttribute
 
   handleRowSelected(event) {
     let source = event.target || event.srcElement;
-    if (source.tagName.toLowerCase() !== 'td') {
+    if (source.tagName.toLowerCase() !== "td") {
       return;
     }
     this.row.$isSelected = this.row.$isSelected ? false : true;
@@ -104,14 +104,14 @@ export let AutSelectCustomAttribute = (_dec = inject(AureliaTableCustomAttribute
   dispatchSelectedEvent() {
     let selectedEvent;
     if (window.CustomEvent) {
-      selectedEvent = new CustomEvent('select', {
-        detail: { row: this.row },
+      selectedEvent = new CustomEvent("select", {
+        detail: { row: this.row, isSelected: this.row.$isSelected },
         bubbles: true
       });
     } else {
-      selectedEvent = document.createEvent('CustomEvent');
-      selectedEvent.initCustomEvent('select', true, true, {
-        detail: { row: this.row }
+      selectedEvent = document.createEvent("CustomEvent");
+      selectedEvent.initCustomEvent("select", true, true, {
+        detail: { row: this.row, isSelected: this.row.$isSelected }
       });
     }
     this.element.dispatchEvent(selectedEvent);
@@ -121,12 +121,12 @@ export let AutSelectCustomAttribute = (_dec = inject(AureliaTableCustomAttribute
     this.setClass();
 
     if (this.row.$isSelected) {
-      if (this.mode === 'single') {
+      if (this.mode === "single") {
         this.deselectAll();
       }
-
-      this.dispatchSelectedEvent();
     }
+
+    this.dispatchSelectedEvent();
   }
 
   deselectAll() {
@@ -136,20 +136,20 @@ export let AutSelectCustomAttribute = (_dec = inject(AureliaTableCustomAttribute
       }
     });
   }
-}, (_descriptor = _applyDecoratedDescriptor(_class2.prototype, 'row', [_dec2], {
+}, (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "row", [_dec2], {
   enumerable: true,
   initializer: null
-}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, 'mode', [bindable], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "mode", [bindable], {
   enumerable: true,
   initializer: function () {
-    return 'single';
+    return "single";
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, 'selectedClass', [bindable], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "selectedClass", [bindable], {
   enumerable: true,
   initializer: function () {
-    return 'aut-row-selected';
+    return "aut-row-selected";
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, 'custom', [bindable], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "custom", [bindable], {
   enumerable: true,
   initializer: function () {
     return false;
