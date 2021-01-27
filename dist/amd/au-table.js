@@ -79,6 +79,7 @@ define(["exports", "aurelia-framework"], function (exports, _aureliaFramework) {
       this.sortChangedListeners = [];
       this.beforePagination = [];
       this.filterObservers = [];
+      this.filterCallbacks = [];
 
       this.bindingEngine = bindingEngine;
     }
@@ -123,6 +124,9 @@ define(["exports", "aurelia-framework"], function (exports, _aureliaFramework) {
         },
         deselectAll: function deselectAll() {
           return _this.deselectAll();
+        },
+        addFilterCallback: function addFilterCallback(callback) {
+          return _this.addFilterCallback(callback);
         }
       };
     };
@@ -161,6 +165,15 @@ define(["exports", "aurelia-framework"], function (exports, _aureliaFramework) {
       }
       this.applyPlugins();
       this.deselectAll();
+      this.filterCallbacks.forEach(function (callback) {
+        callback();
+      });
+    };
+
+    AureliaTableCustomAttribute.prototype.addFilterCallback = function addFilterCallback(callback) {
+      if (callback) {
+        this.filterCallbacks.push(callback);
+      }
     };
 
     AureliaTableCustomAttribute.prototype.currentPageChanged = function currentPageChanged() {
@@ -184,6 +197,10 @@ define(["exports", "aurelia-framework"], function (exports, _aureliaFramework) {
 
       if (this.hasFilter()) {
         localData = this.doFilter(localData);
+      }
+
+      if ((this.sortKey || this.customSort) && this.sortOrder !== 0) {
+        this.doSort(localData);
       }
 
       this.totalItems = localData.length;

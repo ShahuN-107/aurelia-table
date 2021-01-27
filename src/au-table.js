@@ -53,6 +53,7 @@ export class AureliaTableCustomAttribute {
       selectAll: (includeFilters, includePagination) =>
         this.selectAll(includeFilters, includePagination),
       deselectAll: () => this.deselectAll(),
+      addFilterCallback: (callback) => this.addFilterCallback(callback)
     };
   }
 
@@ -77,6 +78,17 @@ export class AureliaTableCustomAttribute {
     }
     this.applyPlugins();
     this.deselectAll();
+    this.filterCallbacks.forEach(callback => {
+      callback();
+    });
+  }
+
+  filterCallbacks = [];
+
+  addFilterCallback(callback) {
+    if (callback) {
+      this.filterCallbacks.push(callback);
+    }
   }
 
   currentPageChanged() {
@@ -106,6 +118,10 @@ export class AureliaTableCustomAttribute {
 
     if (this.hasFilter()) {
       localData = this.doFilter(localData);
+    }
+    
+    if ((this.sortKey || this.customSort) && this.sortOrder !== 0) {
+      this.doSort(localData);
     }
 
     this.totalItems = localData.length;

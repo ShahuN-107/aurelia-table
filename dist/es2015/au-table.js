@@ -66,6 +66,7 @@ export let AureliaTableCustomAttribute = (_dec = inject(BindingEngine), _dec2 = 
     this.sortChangedListeners = [];
     this.beforePagination = [];
     this.filterObservers = [];
+    this.filterCallbacks = [];
 
     this.bindingEngine = bindingEngine;
   }
@@ -85,7 +86,8 @@ export let AureliaTableCustomAttribute = (_dec = inject(BindingEngine), _dec2 = 
     this.api = {
       revealItem: item => this.revealItem(item),
       selectAll: (includeFilters, includePagination) => this.selectAll(includeFilters, includePagination),
-      deselectAll: () => this.deselectAll()
+      deselectAll: () => this.deselectAll(),
+      addFilterCallback: callback => this.addFilterCallback(callback)
     };
   }
 
@@ -110,6 +112,15 @@ export let AureliaTableCustomAttribute = (_dec = inject(BindingEngine), _dec2 = 
     }
     this.applyPlugins();
     this.deselectAll();
+    this.filterCallbacks.forEach(callback => {
+      callback();
+    });
+  }
+
+  addFilterCallback(callback) {
+    if (callback) {
+      this.filterCallbacks.push(callback);
+    }
   }
 
   currentPageChanged() {
@@ -133,6 +144,10 @@ export let AureliaTableCustomAttribute = (_dec = inject(BindingEngine), _dec2 = 
 
     if (this.hasFilter()) {
       localData = this.doFilter(localData);
+    }
+
+    if ((this.sortKey || this.customSort) && this.sortOrder !== 0) {
+      this.doSort(localData);
     }
 
     this.totalItems = localData.length;
